@@ -1,37 +1,45 @@
 /* globals __DEV__ */
-import Phaser from 'phaser'
+import 'phaser'
 import Banner from '../sprites/Banner'
 import Grid from '../sprites/Grid';
 import Client from '../Sockets/Client';
+import config from '../config';
 
 
-export default class extends Phaser.State {
+class Game extends Phaser.Scene {
+  constructor(test) {
+    super({
+        key: 'GameScene'
+    });
+}
+
   init() {}
   preload() { }
 
   create() {
 
+    
+    let bmd = this.add.graphics();    
+    bmd.fillStyle(0x42f474, 1);
+    bmd.fillRect(0, 0, config.width,config.height);
+
     this.client = new Client(this);
-
-     Banner(this, this.world.centerX, this.game.height - 80);
-
-
-    
-    
+     Banner(this, config.width / 2, config.height - 80);
+     
   }
 
   //called by client
   createGrid(gameBoard){
-    
+
+    if(this.grid){
+      this.grid.destroy()
+    }
+
     this.grid = new Grid({
-      game: this.game,
-      x: 0,
-      y: 0,
+      scene: this,
       gameBoard,
       client: this.client    
-    })   
-
-    this.game.add.existing(this.grid)
+    })      
   }
   updateGrid(gameState){
     this.grid.updateGameState(gameState)
@@ -44,3 +52,5 @@ export default class extends Phaser.State {
     }
   }
 }
+
+export default Game;

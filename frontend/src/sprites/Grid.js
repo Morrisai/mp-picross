@@ -1,44 +1,62 @@
-import Phaser from 'phaser'
 import Square from '../sprites/Square';
+import config from '../config';
 
-export default class extends Phaser.Sprite {
-  constructor ({ game, x, y, gameBoard, client }) {
-    super(game, x, y);
+export default class {
+  constructor ({ scene, gameBoard, client }) {
+      //console.log(scene)
+   
+    this.scene = scene;
     this.grid = [];
     this.client = client;
+    
+    let size = Math.floor( (config.width-config.padding-(gameBoard[0].length+1)) / gameBoard[0].length );
+    console.log(config.width, size*gameBoard[0].length)
 
     gameBoard.forEach( (row,rowIndex) => {
-
         let newRow = [];        
-        row.forEach((column,columnIndex)=>{       
-            let square =new Square({game}); 
+        row.forEach((column,columnIndex)=>{   
             
-            if(columnIndex>0){
-                square.alignTo(newRow[columnIndex-1], Phaser.RIGHT_CENTER, 1);               
-            }
-            square.y = rowIndex*(square.height+1);
-            square.events.onInputDown.add(this.onClick, this);
+            let sizePlusPadding = size+1
 
-            square.id = {rowIndex,columnIndex};
+            let xPos = (columnIndex*sizePlusPadding ) + config.padding/2;
+            let yPos = (rowIndex*sizePlusPadding)+ config.padding/2
+           
+            let square =new Square({scene,size,xPos, yPos});           
+
+            square.setId({rowIndex,columnIndex});
             square.updateState(column)
-            this.addChild(square);           
-            newRow.push(square);   
+            scene.add.existing(square)  
+            newRow.push(square);           
+            
+            square.client = this.client;
+            square.on('pointerdown', this.onClick);
+            
         })               
         this.grid.push(newRow);   
-    })
+    })  
+    
+
+    Phaser.Display.Align.In.Center(this,scene);
+
   }
 
-  onClick(e){
-    this.client.dispatchMove(e.id)
+  onClick(){   
+    
+     this.client.dispatchMove(this.id)
+  }
+  destroy(){
+    if(this.grid.length>0){
+        this.grid.forEach( (row,rowIndex) => {               
+            row.forEach((column,columnIndex)=>{
+                column.destroy();
+            })
+        })
+        this.grid = [];
+    }
   }
 
  updateGameState(gameState){
      this.grid[gameState.row][gameState.column].updateState(gameState.value);
  }
 
-
-
-  update () {
-   
-  }
 }

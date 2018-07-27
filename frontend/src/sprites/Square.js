@@ -1,50 +1,49 @@
-import Phaser from 'phaser'
-
-export default class extends Phaser.Sprite {
-  constructor ({ game }) {
-   
-   super(game, 0, 0);
-
-
-    this.inputEnabled = true;
-
-   
-
+class Square extends Phaser.GameObjects.Container {
+  constructor ({ scene, size,xPos,yPos }) {   
+   super(scene, xPos, yPos);
     
-
+    this.size = size;
+    this.xPos = xPos;
+    this.yPos = yPos;
+    
+    const hitArea = new Phaser.Geom.Rectangle(0,0,this.size, this.size)
+    this.setInteractive(hitArea, Phaser.Geom.Rectangle.Contains)
 
   }
 
   setBackground(color){
-    let bmd =  this.game.make.bitmapData(this.width, this.height);
-    bmd.ctx.beginPath();
-    bmd.ctx.rect(0,0,64,64);
-    bmd.ctx.fillStyle = color
-    bmd.ctx.fill();
-    this.setTexture(bmd.texture); 
+    let bmd = this.scene.make.graphics({x: 0, y: 0, add: false});    
+    bmd.fillStyle(color, 1);
+    bmd.fillRect(0, 0, this.size,this.size);
+   
+
+    this.add(bmd)
+   
+
+   
+  }
+  setId(id){
+    this.id = id;    
   }
 
   updateState(data){
-     if(data==="x"){      
-        this.setBackground('#ffffff');
+    
+      if(data==="x"){      
+        this.setBackground(0xffffff);      
+        let label =  this.scene.add.text(this.size/2, this.size/2-2, "x", {
+            fontSize: this.size,
+            color: '#ff0000',
+            smoothed: false,
+            fontFamily: 'Arial'
+            })              
+            label.setOrigin(0.5);         
 
-        let label =  this.game.add.text(0, 0, "x", {
-            font: '40px',
-            fill: '#ff0000',
-            smoothed: false
-            })    
-
-            label.anchor.set(0.5);
-            label.x = Math.floor( this.width / 2);
-            label.y = Math.floor( this.height / 2);
-
-            this.addChild(label);  
-
+            this.add(label);  
 
      } else if(data!=0){
         this.setBackground(data);
      } else if(data===0) {
-        this.setBackground('#ffffff');
+        this.setBackground(0xffffff);
      }
   }
 
@@ -52,3 +51,5 @@ export default class extends Phaser.Sprite {
    
   }
 }
+
+export default Square;

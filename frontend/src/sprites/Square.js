@@ -1,10 +1,14 @@
+import defaultColor from '../defaultColor';
+
 class Square extends Phaser.GameObjects.Container {
-  constructor ({ scene, size,xPos,yPos }) {   
+  constructor ({ scene, xPos,yPos, size }) {   
    super(scene, xPos, yPos);
     
     this.size = size;
-    this.xPos = xPos;
-    this.yPos = yPos;
+
+    this.isFilledIn = false
+    this.isX = false;
+
     
     const hitArea = new Phaser.Geom.Rectangle(0,0,this.size, this.size)
     this.setInteractive(hitArea, Phaser.Geom.Rectangle.Contains)
@@ -12,11 +16,10 @@ class Square extends Phaser.GameObjects.Container {
   }
 
   setBackground(color){
+    const phaserColor = Phaser.Display.Color.GetColor(color.r,color.g,color.b);    
     let bmd = this.scene.make.graphics({x: 0, y: 0, add: false});    
-    bmd.fillStyle(color, 1);
+    bmd.fillStyle(phaserColor, 1);
     bmd.fillRect(0, 0, this.size,this.size);
-   
-
     this.add(bmd)
    
 
@@ -26,10 +29,9 @@ class Square extends Phaser.GameObjects.Container {
     this.id = id;    
   }
 
-  updateState(data){
-    
+  updateState(data){   
       if(data==="x"){      
-        this.setBackground(0xffffff);      
+        this.setBackground(defaultColor);      
         let label =  this.scene.add.text(this.size/2, this.size/2-2, "x", {
             fontSize: this.size,
             color: '#ff0000',
@@ -40,11 +42,16 @@ class Square extends Phaser.GameObjects.Container {
 
             this.add(label);  
 
+            
+            this.isX = true;
+
      } else if(data!=0){
-        this.setBackground(data);
-     } else if(data===0) {
-        this.setBackground(0xffffff);
-     }
+        this.setBackground(data);               
+        this.isFilledIn = JSON.stringify(data) != JSON.stringify(defaultColor)
+     } 
+     console.log("updated")
+
+     
   }
 
   update () {

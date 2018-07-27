@@ -11,7 +11,7 @@ export default {
   parent: 'content',
   width: 800,
   height: 800,
-  padding:200,
+  padding:300,
   scene: [
     BootState,
     SplashState,

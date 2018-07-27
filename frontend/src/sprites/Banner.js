@@ -10,6 +10,6 @@ export default (scene, x,y) => {
 
    // banner.setPadding(10, 16)
     banner.setOrigin(0.5)
- 
+
 }
 

@@ -19,9 +19,9 @@ class Game extends Phaser.Scene {
   create() {
 
     
-    let bmd = this.add.graphics();    
-    bmd.fillStyle(0x42f474, 1);
-    bmd.fillRect(0, 0, config.width,config.height);
+     let bmd = this.add.graphics();    
+     bmd.fillStyle(0xececec, 1);
+     bmd.fillRect(0, 0, config.width,config.height);
 
     this.client = new Client(this);
      Banner(this, config.width / 2, config.height - 80);
@@ -38,18 +38,25 @@ class Game extends Phaser.Scene {
     this.grid = new Grid({
       scene: this,
       gameBoard,
-      client: this.client    
-    })      
+      client: this.client,
+      xPos:0,
+      yPos:0   
+    })   
+    
+    this.add.existing(this.grid);
+
+    //not sure why this is needed. Possible Bug in phaser
+    this.grid.setPosition(0,0)
+ 
   }
   updateGrid(gameState){
     this.grid.updateGameState(gameState)
   }
  
 
-  render() {
-    if (__DEV__) {
-     // this.game.debug.spriteInfo(this.mushroom, 32, 32)
-    }
+  update() {
+    
+    
   }
 }
 

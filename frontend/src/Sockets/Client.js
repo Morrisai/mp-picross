@@ -42,7 +42,7 @@ export default class Client {
 
   gotInitialGameState(data,gameState){
     this.initGameState = data;   
-    gameState.createGrid(this.initGameState.gameState);    
+    gameState.createGrid(this.initGameState);    
   }
   
   

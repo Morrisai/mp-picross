@@ -17,14 +17,16 @@ class Game extends Phaser.Scene {
   preload() { }
 
   create() {
-
+    console.log("TODO::  add restart button, add animations when end, add some sound?, add hint chaning color when row or culumn is finished")
     
      let bmd = this.add.graphics();    
      bmd.fillStyle(0xececec, 1);
      bmd.fillRect(0, 0, config.width,config.height);
 
     this.client = new Client(this);
-     Banner(this, config.width / 2, config.height - 80);
+   
+    
+    Banner(this, config.width / 2, config.height - 80);
      
   }
 
@@ -53,6 +55,9 @@ class Game extends Phaser.Scene {
     this.grid.updateGameState(gameState)
   }
  
+  gameOver(){
+    this.scene.start('GameOverScene')
+  }
 
   update() {
     

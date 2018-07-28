@@ -1,47 +1,42 @@
 const CreatePuzzleFromImage  = require("./CreatePuzzleFromImage");
 
+const MAX_X = 3;
+
+
 class Game{
     
 
     constructor(){
+        
+        
+
+        
+    }
+    startNewGame(){
         this.gameState = [];
         this.hintData = [];
+        this.numOfXs = 0;
+        this.isGameOver = false;
+        
 
-         CreatePuzzleFromImage("./puzzle_images/poca.png",10).then((puzzle)=>{
+        return CreatePuzzleFromImage("./puzzle_images/poca.png",10).then((puzzle)=>{
            
             if(puzzle.length != puzzle[0].length) {
                 throw new Error("Puzzle must be square!")
             }  
     
-                  
+            this.puzzle = puzzle;   
     
-            this.puzzle = puzzle;
-            this.creatBlankGameState();
-    
-             
+            
+            this.creatBlankGameState();             
             this.createHintData()   
 
         }).catch(function (err) {
             // handle an exception
             console.log(err)
         });
-        /** [
-            [ 0, 0, 0, 0, 1, 1, 0, 0, 0, 0],
-            [ 1, 1, 0, 0, 1, 1, 0, 0, 0, 0 ],
-            [ 1, 1, 1, 0, 1, 1, 0, 0, 0, 0],
-            [ 1, 1, 1, 0, 1, 1, 0, 0, 0, 0 ],
-            [ 1, 1, 0, 0, 1, 1, 0, 0, 0, 0 ],
-            [ 1, 1, 0, 0, 1, 1, 0, 0, 0, 0],
-            [ 0, 1, 1, 1, 1, 1, 1, 1, 1, 1 ],
-            [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ],
-            [ 1, 1, 0, 0, 1, 1, 0, 0, 0, 0 ],
-            [ 1, 1, 0, 0, 1, 1, 0, 0, 0, 0 ]
-           ];
-           */
-           
-        
-
     }
+
     creatBlankGameState(){
         this.puzzle.forEach((row)=>{
             let newRow = [];
@@ -55,22 +50,26 @@ class Game{
     }
 
     checkUserMove(data){
-
+        
         //checkIfCorrect
         //return correct or error
-        console.log(this.puzzle[data.row][data.column].a);
-        
         if(this.puzzle[data.row][data.column].a!=0){
             this.gameState[data.row][data.column] = this.puzzle[data.row][data.column];
         }
         else {
             //wrong answer
             this.gameState[data.row][data.column] = "x";
+            this.numOfXs++
+           
         }
-     //   console.log( this.gameState)
+        if(this.numOfXs === MAX_X){
+            this.isGameOver = true;
+        }
         return {row: data.row,
                 column: data.column,
-                value:this.gameState[data.row][data.column]
+                value:this.gameState[data.row][data.column],
+                numOfXs:this.numOfXs,
+                maxXs:MAX_X
         };
         
 

@@ -8,7 +8,7 @@ class Square extends Phaser.GameObjects.Container {
 
     this.isFilledIn = false
     this.isX = false;
-
+    this.clicked = false;
     
     const hitArea = new Phaser.Geom.Rectangle(0,0,this.size, this.size)
     this.setInteractive(hitArea, Phaser.Geom.Rectangle.Contains)

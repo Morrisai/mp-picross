@@ -33,7 +33,7 @@ class BootScene extends Phaser.Scene {
   }
 
   update() {
-    console.log(config.webfonts.length, this.fontsReady)
+   
     if (config.webfonts.length && this.fontsReady) {
       this.startSplash()
     }

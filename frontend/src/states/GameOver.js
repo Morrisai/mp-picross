@@ -1,12 +1,12 @@
-import { centerGameObjects } from '../utils'
+
 import config from '../config';
 import Banner from '../sprites/Banner'
 import lang from '../lang';
 
-class Splash extends Phaser.Scene {
+class GameOver extends Phaser.Scene {
   constructor(test) {
     super({
-        key: 'SplashScene'
+        key: 'GameOverScene'
     });
 }
 
@@ -22,7 +22,7 @@ class Splash extends Phaser.Scene {
     bmd.fillStyle(0xececec, 1);
     bmd.fillRect(0, 0, config.width,config.height);
    
-    Banner(this, config.width / 2, 200, lang.text('welcome'), 100);
+    Banner(this, config.width / 2, 200, lang.text('gameOver'), 100);
 
     const start = Banner(this, config.width / 2, config.height-150, lang.text('start'), 75);
     start.setInteractive();
@@ -35,4 +35,4 @@ class Splash extends Phaser.Scene {
   }
 }
 
-export default Splash;
+export default GameOver;

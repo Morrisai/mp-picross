@@ -5,45 +5,61 @@ export default class Client {
 
     constructor(gameState){   
              
+        this.game = gameState;
+
         this.socket = io('http://192.168.2.15:3000');
         this.socket.on('connect', function(){ console.log("connected")});
         this.socket.on('disconnect', function(){console.log("disconnected")});
 
-        this.socket.on("gameState", (data)=>{
+        this.socket.on("game", (data)=>{
 
-            this.gotGameState(data, gameState);
+            this.gotGameState(data);
+        });
+
+        this.socket.on("gameOver", (data)=>{          
+            this.gotGameOver();
         });
 
         this.socket.on("userMoveUpdate", (data)=>{
-
-            this.gotUserMove(data, gameState);
+            this.gotUserMove(data);
         });
 
         this.socket.on("initalState", (data)=>{
-
-            this.gotInitialGameState(data, gameState);
+            
+            this.gotInitialGameState(data);
         });
 
         
     }
+  
+    
+    startGame(){
+        this.socket.emit('startGame'); 
+    }
+    restartGame(){
+        this.socket.emit('restartGame'); 
+    }
 
+    dispatchMove({rowIndex, columnIndex}){
+        
+        return this.socket.emit('userMove', {row:rowIndex,column:columnIndex});    
+    }
+    gotGameState(data){
+        this.gameStateData = data;   
+        this.game.updateGrid(this.gameStateData);
+    }
+    gotUserMove(userMove){     
+        this.game.updateGrid(userMove);
+    }
 
-  dispatchMove({rowIndex, columnIndex}){
-     
-      return this.socket.emit('userMove', {row:rowIndex,column:columnIndex});    
-  }
-  gotGameState(data,gameState){
-    this.gameStateData = data;   
-    gameState.updateGrid(this.gameStateData);
-  }
-  gotUserMove(userMove,gameState){     
-    gameState.updateGrid(userMove);
-  }
+    gotInitialGameState(data){
+        this.initGameState = data;   
+        this.game.createGrid(this.initGameState);    
+    }
 
-  gotInitialGameState(data,gameState){
-    this.initGameState = data;   
-    gameState.createGrid(this.initGameState);    
-  }
+    gotGameOver(){    
+        this.game.gameOver();
+    }
   
   
 

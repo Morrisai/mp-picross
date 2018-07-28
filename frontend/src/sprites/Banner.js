@@ -1,15 +1,16 @@
-import lang from '../lang';
 
-export default (scene, x,y) => {
-    const bannerText = lang.text('welcome')
+
+export default (scene, x,y , bannerText, size = 40 ) => {   
     let banner = scene.add.text(x, y, bannerText, {
-      font: '40px Bangers',
+      font: size+'px Bangers',
       fill: '#E800FF',
-      smoothed: false
+      smoothed: true
     })
 
    // banner.setPadding(10, 16)
     banner.setOrigin(0.5)
+
+    return banner;
 
 }
 

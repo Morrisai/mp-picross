@@ -1,6 +1,7 @@
 import BootState from './states/Boot'
 import SplashState from './states/Splash'
 import GameState from './states/Game'
+import GameOver from './states/GameOver'
 
 export default {
   localStorageName: 'mp-picross',
@@ -15,6 +16,7 @@ export default {
   scene: [
     BootState,
     SplashState,
-    GameState
+    GameState,
+    GameOver
   ]
 }

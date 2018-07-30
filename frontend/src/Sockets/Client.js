@@ -7,16 +7,17 @@ export default class Client {
              
         this.game = gameState;
 
-        this.socket = io('http://192.168.2.15:3000');
+        this.socket = io();
         this.socket.on('connect', function(){ console.log("connected")});
         this.socket.on('disconnect', function(){console.log("disconnected")});
 
         this.socket.on("game", (data)=>{
-
+            console.log("game") 
             this.gotGameState(data);
         });
 
-        this.socket.on("gameOver", (data)=>{          
+        this.socket.on("gameOver", (data)=>{    
+            console.log("gameOver")      
             this.gotGameOver();
         });
 
@@ -29,7 +30,7 @@ export default class Client {
         });
 
         this.socket.on("initalState", (data)=>{
-            
+            console.log("initalState",data) 
             this.gotInitialGameState(data);
         });
 
@@ -58,7 +59,7 @@ export default class Client {
 
     gotInitialGameState(data){
         this.initGameState = data;   
-        this.game.createGrid(this.initGameState);    
+        this.game.createGame(this.initGameState);    
     }
 
     gotGameOver(){    

@@ -11,8 +11,7 @@ export default class extends Phaser.GameObjects.Container {
     this.client = client;
     this.rowHints = [];
     this.columnHints = [];
-    this.gameBoard = gameBoard;
-    this.numberOfX = 0;
+    this.gameBoard = gameBoard;   
     
     const gridLength = this.gameBoard.gameState[0].length;
 
@@ -56,8 +55,7 @@ export default class extends Phaser.GameObjects.Container {
 
             square.setId({rowIndex,columnIndex});
 
-            //this converts true to 1.            
-            this.numberOfX += column==="x" ? 1 : 0 ; 
+         
             square.updateState(column)
             this.add(square)  
             newRow.push(square);           
@@ -100,8 +98,6 @@ export default class extends Phaser.GameObjects.Container {
     this.add(rowLabel); 
     this.rowHints.push(rowLabel)
     
-    console.log(this.gameBoard.leftToFill.numInColumnToFill[index])
-
     //use /n to break onto new lines for vertical hints
     const columnHint = this.gameBoard.hints.hintColumns[index].join("\n")   
     color =   this.gameBoard.leftToFill.numInColumnToFill[index] > 0   ? config.hintColor: config.hintFinishedColor;
@@ -124,7 +120,7 @@ export default class extends Phaser.GameObjects.Container {
     
     this.add(columnLabel); 
     this.columnHints.push(columnLabel);
-        console.log(this.gameBoard)                                    
+                        
         
   }
 
@@ -139,21 +135,16 @@ export default class extends Phaser.GameObjects.Container {
  
 
  updateGameState(gameState){
-    this.numberOfX += gameState.value==="x" || 0 ; 
+    
     this.gameBoard.gameState[gameState.row][gameState.column] = gameState.value    
     this.grid[gameState.row][gameState.column].updateState(gameState.value);
-
-    console.log(gameState.numLeftInRow, gameState.numLeftInColumn)
-    if(gameState.numLeftInRow===0){
-        this.rowHints[gameState.row].setColor('#f2ba00');  //ffeb3b
-        console.log(this.rowHints[gameState.row])
-    }
-  
     
+    if(gameState.numLeftInRow===0){
+        this.rowHints[gameState.row].setColor('#f2ba00');      
+    }    
     
     if(gameState.numLeftInColumn===0){
-        this.columnHints[gameState.column].setColor('#f2ba00');
-        console.log(this.columnHints[gameState.column])
+        this.columnHints[gameState.column].setColor('#f2ba00');        
     }
     
     

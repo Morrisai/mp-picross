@@ -1,7 +1,7 @@
 const CreatePuzzleFromImage  = require("./CreatePuzzleFromImage");
 const puzzleList = require("./puzzleList")
 
-const MAX_X = 3;
+const MAX_X = 6;
 
 
 class Game{
@@ -108,7 +108,10 @@ class Game{
         return {
                 gameState:this.getGameState(),
                 hints:this.getHintData(),
-                leftToFill:this.getLeftToFill()
+                leftToFill:this.getLeftToFill(),
+                xState:{MAX_X,
+                    numOfXs:this.numOfXs
+                }
         }
     }
    

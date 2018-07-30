@@ -6,6 +6,7 @@ import Client from '../Sockets/Client';
 import config from '../config';
 import Button from '../sprites/Button';
 import lang from '../lang';
+import XState from '../sprites/XState';
 
 
 class Game extends Phaser.Scene {
@@ -21,9 +22,9 @@ class Game extends Phaser.Scene {
   create() {
     console.log("TODO:: fix 5 space markers,fix double win screens, add some sound?")
     
-     let bmd = this.add.graphics();    
-     bmd.fillStyle(0xececec, 1);
-     bmd.fillRect(0, 0, config.width,config.height);
+    const bmd = this.add.graphics();    
+    bmd.fillStyle(0xececec, 1);
+    bmd.fillRect(0, 0, config.width,config.height);
 
     this.client = new Client(this);
    
@@ -40,7 +41,7 @@ class Game extends Phaser.Scene {
   }
 
   //called by client
-  createGrid(gameBoard){
+  createGame(gameBoard){
 
     if(this.grid){
       this.grid.destroy()
@@ -58,24 +59,34 @@ class Game extends Phaser.Scene {
 
     //not sure why this is needed. Possible Bug in phaser
     this.grid.setPosition(0,0)
+  
+
+    
+    
+    this.xRemaining = new XState( this, config.width / 2, 20, gameBoard.xState.MAX_X,gameBoard.xState.numOfXs )
+    
+    this.add.existing(this.xRemaining);
 
     this.grid.setAlpha(0);
     this.restart.setAlpha(0);
     this.tweens.add({
-      targets: [this.grid,this.restart, this.title],
-      alpha: { value: '1', duration: 1000, ease: 'Cubic.easeOut' }
-  });
+        targets: [this.grid,this.restart, this.title],
+        alpha: { value: '1', duration: 1000, ease: 'Cubic.easeOut' }
+    });
  
   }
   updateGrid(gameState){
     this.grid.updateGameState(gameState)
+
+    
+    this.xRemaining.setXState(gameState.numOfXs)
   }
   restartGame(){
     this.tweens.add({
       targets: [this.grid, this.restart,this.title],
       alpha: { value: '0', duration: 500, ease: 'Cubic.easeOut' },
       onComplete: ()=>{this.client.restartGame();
-        this.scene.start('SplashScene')},
+        this.scene.switch('SplashScene')},
     });
   }
  
@@ -84,7 +95,7 @@ class Game extends Phaser.Scene {
     this.tweens.add({
       targets: [this.grid, this.restart,this.title],
       alpha: { value: '0', duration: 500, ease: 'Cubic.easeOut' },
-      onComplete: ()=>{this.scene.switch('GameScene','GameOverScene')},
+      onComplete: ()=>{this.scene.switch('GameOverScene')},
   });
 
     
@@ -95,7 +106,7 @@ class Game extends Phaser.Scene {
       this.tweens.add({
         targets: [this.grid, this.restart,this.title],
         alpha: { value: '0', duration: 500, ease: 'Cubic.easeOut' },
-        onComplete: ()=>{this.scene.switch('GameScene','GameWonScene')},
+        onComplete: ()=>{this.scene.switch('GameWonScene')},
     });
   }
 

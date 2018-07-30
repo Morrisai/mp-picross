@@ -10,7 +10,7 @@ class Square extends Phaser.GameObjects.Container {
     this.isX = false;
     this.clicked = false;
     
-    const hitArea = new Phaser.Geom.Rectangle(0,0,this.size, this.size)
+    const hitArea = new Phaser.Geom.Rectangle(0,0,this.size, this.size);
     this.setInteractive(hitArea, Phaser.Geom.Rectangle.Contains)
 
   }
@@ -18,7 +18,7 @@ class Square extends Phaser.GameObjects.Container {
   setBackground(color){
     const phaserColor = Phaser.Display.Color.GetColor(color.r,color.g,color.b);    
     let bmd = this.scene.make.graphics({x: 0, y: 0, add: false});    
-    bmd.fillStyle(phaserColor, 1);
+    bmd.fillStyle(phaserColor, 0.5);
     bmd.fillRect(0, 0, this.size,this.size);
     this.add(bmd)
    
@@ -49,7 +49,7 @@ class Square extends Phaser.GameObjects.Container {
         this.setBackground(data);               
         this.isFilledIn = JSON.stringify(data) != JSON.stringify(defaultColor)
      } 
-     console.log("updated")
+     //console.log("updated")
 
      
   }

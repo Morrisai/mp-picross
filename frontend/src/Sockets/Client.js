@@ -20,6 +20,10 @@ export default class Client {
             this.gotGameOver();
         });
 
+        this.socket.on("gameWon", (data)=>{          
+            this.gotGameWon();
+        });
+
         this.socket.on("userMoveUpdate", (data)=>{
             this.gotUserMove(data);
         });
@@ -37,7 +41,7 @@ export default class Client {
         this.socket.emit('startGame'); 
     }
     restartGame(){
-        this.socket.emit('restartGame'); 
+        this.socket.emit('startGame'); 
     }
 
     dispatchMove({rowIndex, columnIndex}){
@@ -59,6 +63,10 @@ export default class Client {
 
     gotGameOver(){    
         this.game.gameOver();
+    }
+
+    gotGameWon(){    
+        this.game.gameWon();
     }
   
   

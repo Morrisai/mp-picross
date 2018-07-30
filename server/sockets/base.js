@@ -8,8 +8,8 @@ const game = new Game();
 
 io.on('connection', socket=>{     
 
-    if(game.isGameOver!=undefined && !game.isGameOver){
-        console.log(game.isGameOver, "emitInitialState")
+    if(game.isGameOver!=undefined && game.isGameWon!=undefined && !game.isGameOver && !game.isGameWon){
+        //console.log(game.isGameOver, "emitInitialState")
         emitInitialState(game)
     } else {
         startGame(game);
@@ -19,6 +19,8 @@ io.on('connection', socket=>{
         startGame(game)
         
     })    
+
+    
     socket.on('userMove',  data=>{ 
 
         if(game.isGameOver) {
@@ -29,9 +31,13 @@ io.on('connection', socket=>{
         if(!isNaN(data.row) && !isNaN(data.column)){   
             
             let currentGameState = game.checkUserMove(data);
-            if(currentGameState.numOfXs===currentGameState.maxXs){
+            
+            if(currentGameState.isGameOver){
                 emitGameOver(currentGameState);
-            }else {
+            }else if(currentGameState.isGameWon){
+                emitGameWon(currentGameState);
+            }
+            else {
                 io.emit("userMoveUpdate",currentGameState );
             }
             
@@ -59,7 +65,11 @@ const emitGameOver = (currentGameState)=>{
 
     io.emit("gameOver",currentGameState);
 }
+const emitGameWon = (currentGameState)=>{
 
+
+    io.emit("gameWon",currentGameState);
+}
 
 
 }

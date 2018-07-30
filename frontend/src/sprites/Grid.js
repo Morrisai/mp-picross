@@ -14,21 +14,50 @@ export default class extends Phaser.GameObjects.Container {
     this.gameBoard = gameBoard;
     this.numberOfX = 0;
     
+    const gridLength = this.gameBoard.gameState[0].length;
+
+    this.squareSize = Math.min(100,Math.floor( (config.width-config.padding-(gridLength+1)) / gridLength ));
+
+    const sizePlusPadding =  this.squareSize+1;
+    const halfPadding = config.padding/2;
+
+
+
+    //first draw grid lines
+    const graphics = this.scene.add.graphics();    
+    graphics.lineStyle(1, 0xaaaaaa, 1);
+   // graphics.strokeRect(halfPadding, halfPadding, gridLength*sizePlusPadding,gridLength*sizePlusPadding);
+
     
-    this.size = Math.floor( (config.width-config.padding-(this.gameBoard.gameState[0].length+1)) / this.gameBoard.gameState[0].length );
-    const sizePlusPadding =  this.size+1
+    this.add(graphics)
 
     this.gameBoard.gameState.forEach( (row,rowIndex) => {
-        let newRow = [];        
+        let newRow = [];     
+        let yPos = (rowIndex*sizePlusPadding) + halfPadding
+
+       //draw a line every 5 squares
+        if(rowIndex > 0 && rowIndex % 5 ===0){              
+            graphics.beginPath();
+            graphics.moveTo(halfPadding,  yPos  );
+            graphics.lineTo(gridLength*sizePlusPadding+halfPadding,yPos);            
+            graphics.strokePath();           
+           
+            graphics.beginPath();
+            graphics.moveTo(yPos, halfPadding    );
+            graphics.lineTo(yPos, gridLength*sizePlusPadding+halfPadding);             
+            graphics.strokePath();
+        }
+
         row.forEach((column,columnIndex)=>{
 
-            let xPos = (columnIndex*sizePlusPadding ) + config.padding/2;
-            let yPos = (rowIndex*sizePlusPadding)+ config.padding/2
+            let xPos = (columnIndex*sizePlusPadding ) + halfPadding;            
            
-            let square = new Square({scene, size:this.size ,xPos, yPos});           
+            let square = new Square({scene, size:this.squareSize ,xPos, yPos});           
 
             square.setId({rowIndex,columnIndex});
-            this.numberOfX += column==="x" || 0 ; 
+
+            //this converts true to 1.            
+            this.numberOfX += column==="x" ? 1 : 0 ; 
             square.updateState(column)
             this.add(square)  
             newRow.push(square);           
@@ -37,14 +66,14 @@ export default class extends Phaser.GameObjects.Container {
             square.on('pointermove', this.onClick);
             square.on('pointerdown', this.onClick);
             
-        })               
+        })        
+        
         this.grid.push(newRow);        
         this.addHints(rowIndex);
         
     })  
     
     
-    this.checkScore();
 
   }
 
@@ -55,13 +84,14 @@ export default class extends Phaser.GameObjects.Container {
     
     //create hint text with double spaced numbers for legibility
     const rowHint = this.gameBoard.hints.hintRows[index].join("  ");
+    let color =   this.gameBoard.leftToFill.numInRowToFill[index] > 0  ? config.hintColor: config.hintFinishedColor;
     let rowLabel =  this.scene.add.text(
                                         config.padding/2-5,
-                                        index*(this.size+1) + config.padding/2, 
+                                        index*(this.squareSize+1) + config.padding/2, 
                                         rowHint, 
                                         {
-                                            fontSize: this.size,
-                                            color: '#333333',
+                                            fontSize: this.squareSize,
+                                            color: color,
                                             smoothed: false,
                                             fontFamily: 'Arial',
                                             backgroundColor:0x000000
@@ -70,29 +100,31 @@ export default class extends Phaser.GameObjects.Container {
     this.add(rowLabel); 
     this.rowHints.push(rowLabel)
     
+    console.log(this.gameBoard.leftToFill.numInColumnToFill[index])
 
     //use /n to break onto new lines for vertical hints
-    const columnHint = this.gameBoard.hints.hintColumns[index].join("\n")     
+    const columnHint = this.gameBoard.hints.hintColumns[index].join("\n")   
+    color =   this.gameBoard.leftToFill.numInColumnToFill[index] > 0   ? config.hintColor: config.hintFinishedColor;
     const columnLabel =  this.scene.add.text(        
                                            0, //set width based on final size of text field. IE two digets need more space
                                             config.padding/2-5,
                                             columnHint, 
                                             {
-                                                fontSize: this.size*0.75,
-                                                color: '#333333',
+                                                fontSize: this.squareSize*0.75,
+                                                color: color,
                                                 smoothed: false,
                                                 fontFamily: 'Arial',
                                                 backgroundColor:0x000000,
                                                 align: 'center'
                                             })              
     columnLabel.setOrigin(0,1);
-    columnLabel.x = index*(this.size+1) + (config.padding/2) + (this.size-columnLabel.displayWidth)/2
+    columnLabel.x = index*(this.squareSize+1) + (config.padding/2) + (this.squareSize-columnLabel.displayWidth)/2
     
     
     
     this.add(columnLabel); 
     this.columnHints.push(columnLabel);
-                                            
+        console.log(this.gameBoard)                                    
         
   }
 
@@ -104,20 +136,27 @@ export default class extends Phaser.GameObjects.Container {
     }
   }
  
-  checkScore(){
-    this.gameBoard.gameState.forEach( (row,rowIndex) => {              
-        row.forEach((column,columnIndex)=>{ 
-
-        })
-    })
-  }
+ 
 
  updateGameState(gameState){
     this.numberOfX += gameState.value==="x" || 0 ; 
     this.gameBoard.gameState[gameState.row][gameState.column] = gameState.value    
     this.grid[gameState.row][gameState.column].updateState(gameState.value);
 
-    this.checkScore();
+    console.log(gameState.numLeftInRow, gameState.numLeftInColumn)
+    if(gameState.numLeftInRow===0){
+        this.rowHints[gameState.row].setColor('#f2ba00');  //ffeb3b
+        console.log(this.rowHints[gameState.row])
+    }
+  
+    
+    
+    if(gameState.numLeftInColumn===0){
+        this.columnHints[gameState.column].setColor('#f2ba00');
+        console.log(this.columnHints[gameState.column])
+    }
+    
+    
  }
 
 }

@@ -2,9 +2,12 @@ import idiom from 'idiom.js'
 
 const lang = idiom({
   'default': {
-    'welcome': 'MP-Picross!',
+    'title': 'MP-Picross!',
     'start': 'Start!',
-    'gameOver': 'Game Over!'
+    'playAgain': 'play Again!',
+    'gameOver': 'Game Over!',
+    'gameWon': 'You Won!',
+    'restartGame':'Restart Game'
   }
 })
 

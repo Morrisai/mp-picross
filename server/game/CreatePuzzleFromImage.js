@@ -18,7 +18,7 @@ const CreatePuzzleFromImage = (filePath, size)=>{
 
 
                 puzzle[y] = puzzle[y] || [];
-                puzzle[y][x] = {r, g, b, a} ;              
+                puzzle[y][x] = a === 255 ?  {r, g, b, a} : "x" ;              
               // console.log (puzzle[y][x]);
 
                

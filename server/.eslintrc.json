@@ -1,0 +1,17 @@
+{
+  "extends": ["eslint:recommended"],
+  "env": {
+    "node": 1
+  },
+  "rules":{
+    "linebreak-style": 0,
+    "indent": ["error", "tab"]
+  },
+  "parserOptions": {
+    "sourceType": "module",
+    "ecmaVersion": 7,
+    "ecmaFeatures": {
+        "experimentalObjectRestSpread": true
+    }
+  }  
+}

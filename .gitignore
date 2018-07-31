@@ -8,3 +8,5 @@ dist/
 /index.html
 build/
 dev/
+images
+public

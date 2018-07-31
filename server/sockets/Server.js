@@ -1,8 +1,8 @@
-module.exports = io => {
+module.exports = (io) => {
 	const Game = require('../game/GameManager');
 	const game = new Game();
 
-	io.on('connection', socket => {
+	io.on('connection', (socket) => {
 		if (
 			game.isGameOver != undefined &&
 			game.isGameWon != undefined &&
@@ -19,7 +19,7 @@ module.exports = io => {
 			startGame(game);
 		});
 
-		socket.on('userMove', data => {
+		socket.on('userMove', (data) => {
 			if (game.isGameOver) {
 				emitGameOver();
 				return;
@@ -41,20 +41,20 @@ module.exports = io => {
 		});
 	});
 
-	const startGame = game => {
+	const startGame = (game) => {
 		game.startNewGame().then(() => {
 			emitInitialState(game);
 		});
 	};
 
-	const emitInitialState = game => {
+	const emitInitialState = (game) => {
 		io.emit('initalState', game.getCurrentStateWithHints());
 	};
 
-	const emitGameOver = currentGameState => {
+	const emitGameOver = (currentGameState) => {
 		io.emit('gameOver', currentGameState);
 	};
-	const emitGameWon = currentGameState => {
+	const emitGameWon = (currentGameState) => {
 		io.emit('gameWon', currentGameState);
 	};
 };

@@ -1,17 +1,17 @@
  {
     "useTabs": true,      
     "printWidth": 80,     
-    "tabWidth": 3,        
+    "tabWidth": 2,        
     "singleQuote": true,  
    
     "trailingComma": "none",
     
     "jsxBracketSameLine": true,
-    "arrowParens":"always",
-   
+    
+    "parser": "babylon",
     
     "noSemi": true,
     
     "rcVerbose": true,
-    "bracketSpacing":false
+    "bracketSpacing":true
 }

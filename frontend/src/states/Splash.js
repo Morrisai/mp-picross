@@ -19,6 +19,7 @@ class Splash extends Phaser.Scene {
   }
 
   create () {
+
     let bmd = this.add.graphics();    
     bmd.fillStyle(0xececec, 1);
     bmd.fillRect(0, 0, config.width,config.height);

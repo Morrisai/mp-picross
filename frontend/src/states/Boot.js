@@ -10,7 +10,7 @@ class BootScene extends Phaser.Scene {
 }
   
   init() {
-    
+    console.log(config.width, config.height)
     this.fontsReady = false
     this.fontsLoaded = this.fontsLoaded.bind(this)
   }
@@ -41,6 +41,7 @@ class BootScene extends Phaser.Scene {
       this.startSplash()
     }
   }
+
 
   fontsLoaded() {
     this.fontsReady = true

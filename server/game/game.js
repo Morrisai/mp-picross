@@ -1,14 +1,12 @@
 const CreatePuzzleFromImage  = require("./CreatePuzzleFromImage");
-const puzzleList = require("./puzzleList")
+const puzzleList = require("./puzzleList");
 
 const MAX_X = 6;
 
-
 class Game{    
-    constructor(){
-        
+    constructor(){        
     }
-
+    
     startNewGame(){
         this.gameState = [];        
         this.numOfXs = 0;        
@@ -182,7 +180,7 @@ class Game{
         Not both.  Both rows and coluumns should have equare numbers anyways. 
         */
         const totalNumber = numInRowToFill.reduce((a, b) => a + b);
-        
+
         this.numToFillArr = { 
             numInRowToFill,
             numInColumnToFill,

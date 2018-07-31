@@ -1,56 +1,58 @@
-
-import WebFont from 'webfontloader'
+import WebFont from 'webfontloader';
 import config from '../config';
+import Phaser from 'phaser';
 
 class BootScene extends Phaser.Scene {
-  constructor(test) {
-    super({
-        key: 'BootScene'
-    });
-}
-  
-  init() {
-    console.log(config.width, config.height)
-    this.fontsReady = false
-    this.fontsLoaded = this.fontsLoaded.bind(this)
-  }
+	constructor() {
+		super({
+			key: 'BootScene'
+		});
+	}
 
-  preload() {
-    if (config.webfonts.length) {
-      WebFont.load({
-        google: {
-          families: config.webfonts
-        },
-        active: this.fontsLoaded
-      })
-    }
+	init() {		
+		this.fontsReady = false;
+		this.fontsLoaded = this.fontsLoaded.bind(this);
+	}
 
-    let text = this.add.text(this.sys.game.config.width / 2, this.sys.game.config.height / 2, 'loading fonts', { font: '16px Arial', fill: '#dddddd', align: 'center' })
-    text.setOrigin(0.5, 0.5)
+	preload() {
+		if (config.webfonts.length) {
+			WebFont.load({
+				google: {
+					families: config.webfonts
+				},
+				active: this.fontsLoaded
+			});
+		}
 
-    this.load.image('loaderBg', './assets/images/loader-bg.png')
-    this.load.image('loaderBar', './assets/images/loader-bar.png')
-  }
+		let text = this.add.text(
+			this.sys.game.config.width / 2,
+			this.sys.game.config.height / 2,
+			'loading fonts',
+			{ font: '16px Arial', fill: '#dddddd', align: 'center' }
+		);
+		text.setOrigin(0.5, 0.5);
 
-  update() {
-   
-    if (config.webfonts.length && this.fontsReady) {
-      this.startSplash()
-    }
-    if (!config.webfonts.length) {
-      this.startSplash()
-    }
-  }
+		this.load.image('loaderBg', './assets/images/loader-bg.png');
+		this.load.image('loaderBar', './assets/images/loader-bar.png');
+	}
 
+	update() {
+		if (config.webfonts.length && this.fontsReady) {
+			this.startSplash();
+		}
+		if (!config.webfonts.length) {
+			this.startSplash();
+		}
+	}
 
-  fontsLoaded() {
-    this.fontsReady = true
-  }
-  startSplash() {
-    this.scene.stop('SplashScene');
-   
-    this.scene.start('SplashScene');
-}
+	fontsLoaded() {
+		this.fontsReady = true;
+	}
+	startSplash() {
+		this.scene.stop('SplashScene');
+
+		this.scene.start('SplashScene');
+	}
 }
 
 export default BootScene;

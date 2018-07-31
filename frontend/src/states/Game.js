@@ -1,6 +1,5 @@
-/* globals __DEV__ */
-import 'phaser'
-import Banner from '../sprites/Banner'
+import Phaser from 'phaser';
+import Banner from '../sprites/Banner';
 import Grid from '../sprites/Grid';
 import Client from '../Sockets/Client';
 import config from '../config';
@@ -8,97 +7,109 @@ import Button from '../sprites/Button';
 import lang from '../lang';
 import XState from '../sprites/XState';
 
-
 class Game extends Phaser.Scene {
-  constructor(test) {
-    super({
-        key: 'GameScene'
-    });
-}
+	constructor() {
+		super({
+			key: 'GameScene'
+		});
+	}
 
-  init() {}
-  preload() { }
+	init() {}
+	preload() {}
 
-  create() {
-    console.log("TODO:: fix 5 space markers,fix double win screens, add some sound?")
-    
-    const bmd = this.add.graphics();    
-    bmd.fillStyle(0xececec, 1);
-    bmd.fillRect(0, 0, config.width,config.height);
+	create() {
+		const bmd = this.add.graphics();
+		bmd.fillStyle(0xececec, 1);
+		bmd.fillRect(0, 0, config.width, config.height);
 
-    this.client = new Client(this);   
-    
-    this.title = Banner(this,65, 15,  lang.text('title'), 25);
+		this.client = new Client(this);
 
-    this.restart = new Button(this, config.width / 2, config.height-75, lang.text('restartGame'), 50);  
-    this.add.existing( this.restart); 
-    
-    this.restart.once('pointerdown', this.restartGame,this);
-    
-    this.restart.setAlpha(0);
-    this.title.setAlpha(0);
-  }
+		this.title = Banner(this, 65, 15, lang.text('title'), 25);
 
-  //called by client
-  createGame(gameBoard){
+		this.restart = new Button(
+			this,
+			config.width / 2,
+			config.height - 75,
+			lang.text('restartGame'),
+			50
+		);
+		this.add.existing(this.restart);
 
-    if(this.grid){
-      this.grid.destroy()
-    }
+		this.restart.once('pointerdown', this.restartGame, this);
 
-    this.grid = new Grid({
-      scene: this,
-      gameBoard,
-      client: this.client,
-      xPos:0,
-      yPos:0   
-    });  
-    
-    this.add.existing(this.grid);
+		this.restart.setAlpha(0);
+		this.title.setAlpha(0);
+	}
 
-    //not sure why this is needed. Possible Bug in phaser
-    this.grid.setPosition(0,0);
-    
-    this.xRemaining = new XState( this, config.width / 2, 20, gameBoard.xState.MAX_X,gameBoard.xState.numOfXs );
-    
-    this.add.existing(this.xRemaining);
+	//called by client
+	createGame(gameBoard) {
+		if (this.grid) {
+			this.grid.destroy();
+		}
 
-    this.grid.setAlpha(0);
-    this.restart.setAlpha(0);
-    this.tweens.add({
-        targets: [this.grid,this.restart, this.title],
-        alpha: { value: '1', duration: 1000, ease: 'Cubic.easeOut' }
-    }); 
-  }
-  updateGrid(gameState){
-    this.grid.updateGameState(gameState)
+		this.grid = new Grid({
+			scene: this,
+			gameBoard,
+			client: this.client,
+			xPos: 0,
+			yPos: 0
+		});
 
-    
-    this.xRemaining.setXState(gameState.numOfXs)
-  }
-  restartGame(){
-    this.tweens.add({
-      targets: [this.grid, this.restart,this.title],
-      alpha: { value: '0', duration: 500, ease: 'Cubic.easeOut' },
-      onComplete: ()=>{this.client.restartGame();
-        this.scene.switch('SplashScene')},
-    });
-  } 
-  gameOver(){
+		this.add.existing(this.grid);
 
-    this.tweens.add({
-      targets: [this.grid, this.restart,this.title],
-      alpha: { value: '0', duration: 500, ease: 'Cubic.easeOut' },
-      onComplete: ()=>{this.scene.switch('GameOverScene')},
-    });   
-  }
-  gameWon(){
-      this.tweens.add({
-        targets: [this.grid, this.restart,this.title],
-        alpha: { value: '0', duration: 500, ease: 'Cubic.easeOut' },
-        onComplete: ()=>{this.scene.switch('GameWonScene')},
-    });
-  }
+		//not sure why this is needed. Possible Bug in phaser
+		this.grid.setPosition(0, 0);
+
+		this.xRemaining = new XState(
+			this,
+			config.width / 2,
+			20,
+			gameBoard.xState.MAX_X,
+			gameBoard.xState.numOfXs
+		);
+
+		this.add.existing(this.xRemaining);
+
+		this.grid.setAlpha(0);
+		this.restart.setAlpha(0);
+		this.tweens.add({
+			targets: [this.grid, this.restart, this.title],
+			alpha: { value: '1', duration: 1000, ease: 'Cubic.easeOut' }
+		});
+	}
+	updateGrid(gameState) {
+		this.grid.updateGameState(gameState);
+
+		this.xRemaining.setXState(gameState.numOfXs);
+	}
+	restartGame() {
+		this.tweens.add({
+			targets: [this.grid, this.restart, this.title],
+			alpha: { value: '0', duration: 500, ease: 'Cubic.easeOut' },
+			onComplete: () => {
+				this.client.restartGame();
+				this.scene.switch('SplashScene');
+			}
+		});
+	}
+	gameOver() {
+		this.tweens.add({
+			targets: [this.grid, this.restart, this.title],
+			alpha: { value: '0', duration: 500, ease: 'Cubic.easeOut' },
+			onComplete: () => {
+				this.scene.switch('GameOverScene');
+			}
+		});
+	}
+	gameWon() {
+		this.tweens.add({
+			targets: [this.grid, this.restart, this.title],
+			alpha: { value: '0', duration: 500, ease: 'Cubic.easeOut' },
+			onComplete: () => {
+				this.scene.switch('GameWonScene');
+			}
+		});
+	}
 }
 
 export default Game;

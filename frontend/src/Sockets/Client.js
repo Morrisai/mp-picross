@@ -1,79 +1,64 @@
 import io from 'socket.io-client';
 
-
 export default class Client {
+	constructor(gameState) {
+		this.game = gameState;
+		
+		const serverUrl = __DEV__ ? 'http://localhost:3000' : ''; // eslint-disable-line
 
-    constructor(gameState){   
-             
-        this.game = gameState;
+		this.socket = io(serverUrl);
+		this.socket.on('connect', function() {});
+		this.socket.on('disconnect', function() {});
 
-        console.log(__DEV__)
+		this.socket.on('game', data => {
+			this.gotGameState(data);
+		});
 
-        const serverUrl = __DEV__ ? "http://localhost:3000" : "";
+		this.socket.on('gameOver', () => {
+			this.gotGameOver();
+		});
 
-        this.socket = io(serverUrl);
-        this.socket.on('connect', function(){ console.log("connected")});
-        this.socket.on('disconnect', function(){console.log("disconnected")});
+		this.socket.on('gameWon', () => {
+			this.gotGameWon();
+		});
 
-        this.socket.on("game", (data)=>{
-           
-            this.gotGameState(data);
-        });
+		this.socket.on('userMoveUpdate', data => {
+			this.gotUserMove(data);
+		});
 
-        this.socket.on("gameOver", (data)=>{    
-                 
-            this.gotGameOver();
-        });
+		this.socket.on('initalState', data => {
+			this.gotInitialGameState(data);
+		});
+	}
 
-        this.socket.on("gameWon", (data)=>{          
-            this.gotGameWon();
-        });
+	startGame() {
+		this.socket.emit('startGame');
+	}
+	restartGame() {
+		this.socket.emit('startGame');
+	}
 
-        this.socket.on("userMoveUpdate", (data)=>{
-            this.gotUserMove(data);
-        });
+	dispatchMove({ rowIndex, columnIndex }) {
+		return this.socket.emit('userMove', { row: rowIndex, column: columnIndex });
+	}
+	gotGameState(data) {
+		this.gameStateData = data;
+		this.game.updateGrid(this.gameStateData);
+	}
+	gotUserMove(userMove) {
+		this.game.updateGrid(userMove);
+	}
 
-        this.socket.on("initalState", (data)=>{
-           
-            this.gotInitialGameState(data);
-        });
+	gotInitialGameState(data) {
+		this.initGameState = data;
+		this.game.createGame(this.initGameState);
+	}
 
-        
-    }
-  
-    
-    startGame(){
-        this.socket.emit('startGame'); 
-    }
-    restartGame(){
-        this.socket.emit('startGame'); 
-    }
+	gotGameOver() {
+		this.game.gameOver();
+	}
 
-    dispatchMove({rowIndex, columnIndex}){
-        
-        return this.socket.emit('userMove', {row:rowIndex,column:columnIndex});    
-    }
-    gotGameState(data){
-        this.gameStateData = data;   
-        this.game.updateGrid(this.gameStateData);
-    }
-    gotUserMove(userMove){     
-        this.game.updateGrid(userMove);
-    }
-
-    gotInitialGameState(data){
-        this.initGameState = data;   
-        this.game.createGame(this.initGameState);    
-    }
-
-    gotGameOver(){    
-        this.game.gameOver();
-    }
-
-    gotGameWon(){    
-        this.game.gameWon();
-    }
-  
-  
-
+	gotGameWon() {
+		this.game.gameWon();
+	}
 }

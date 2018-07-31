@@ -4,32 +4,26 @@ const puzzleList = require("./puzzleList")
 const MAX_X = 6;
 
 
-class Game{
-    
-
+class Game{    
     constructor(){
         
-        
-
-        
     }
+
     startNewGame(){
         this.gameState = [];        
         this.numOfXs = 0;        
         this.isGameOver = false;
         this.isGameWon = false;
         var rand = Math.floor(Math.random()*puzzleList.length);
-        var randPuzzle = puzzleList[rand]
-
+        var randPuzzle = puzzleList[rand];
+        this.userMoves =[];
       
-        return CreatePuzzleFromImage(randPuzzle,10).then((puzzle)=>{
-           
+        return CreatePuzzleFromImage(randPuzzle,10).then((puzzle)=>{           
             if(puzzle.length != puzzle[0].length) {
                 throw new Error("Puzzle must be square!")
             }  
     
-            this.puzzle = puzzle;   
-    
+            this.puzzle = puzzle;    
             
             this.creatBlankGameState();             
             this.createHintData()   
@@ -48,37 +42,36 @@ class Game{
             })
             this.gameState.push(newRow);
         })
-
-        //console.log(this.gameState)
     }
 
-    checkUserMove(data){
+    checkUserMove(data){ 
         
-        //checkIfCorrect
-        //return correct or error
-       
+       var userMoveString = data.row.toString() + data.column.toString()
 
-        if(this.puzzle[data.row][data.column]==="x"){
-            this.numOfXs++
+        //check if boxed checked yet. help to prevent race condition of two players checking the same box at the same time. 
+        if(!this.userMoves.includes(userMoveString) ){
+            if(this.puzzle[data.row][data.column]==="x"){
+                this.numOfXs++
+            } else {
+                this.numToFillArr.totalNumber--
+
+                this.numToFillArr.numInRowToFill[data.row]--
+                this.numToFillArr.numInColumnToFill[data.column]--            
+            }
+
+            if(this.numOfXs === MAX_X){
+                this.isGameOver = true;
+            }
+
+            if( this.numToFillArr.totalNumber ===0 ){
+                this.isGameWon = true;
+            }
+            this.gameState[data.row][data.column] = this.puzzle[data.row][data.column];
         } else {
-            this.numToFillArr.totalNumber--
-
-            this.numToFillArr.numInRowToFill[data.row]--
-            this.numToFillArr.numInColumnToFill[data.column]--
-           
+            console.log("user moved checked already")
         }
-
-        if(this.numOfXs === MAX_X){
-            this.isGameOver = true;
-        }
-
-      
-
-        if( this.numToFillArr.totalNumber ===0 ){
-            this.isGameWon = true;
-        }
-
-        this.gameState[data.row][data.column] = this.puzzle[data.row][data.column];
+        //record user Move
+        this.userMoves.push(userMoveString)
 
         return {
                 row: data.row,
@@ -91,8 +84,6 @@ class Game{
                 isGameOver:this.isGameOver,
                 isGameWon:this.isGameWon
             };
-        
-
     }
 
     getGameState(){
@@ -109,18 +100,15 @@ class Game{
                 gameState:this.getGameState(),
                 hints:this.getHintData(),
                 leftToFill:this.getLeftToFill(),
-                xState:{MAX_X,
+                xState:{
+                    MAX_X,
                     numOfXs:this.numOfXs
                 }
         }
     }
-   
 
     createHintData(){
-
         const boardSize = this.puzzle[0].length;
-
-
 
          //do columns first 
         const hintColumns = [];
@@ -152,9 +140,7 @@ class Game{
 
             numInColumnToFill.push(numPerColumn)
             numPerColumn=0;
-        })
-
-         
+        });        
       
         //Rows
         const hintRows = []
@@ -164,8 +150,7 @@ class Game{
             let streak = 0;   
             let numPerRow = 0;    
 
-            hintRows[rowIndex] = [];
-           
+            hintRows[rowIndex] = [];          
 
             row.forEach((column, columnIndex)=>{ 
                 if(column!="x"){
@@ -183,11 +168,9 @@ class Game{
             })
             if( hintRows[rowIndex].length ===0)
                 hintRows[rowIndex].push(0);
-
                 
             numInRowToFill.push(numPerRow)
             numPerRow=0
-
         })
 
         this.hintData= {
@@ -199,20 +182,13 @@ class Game{
         Not both.  Both rows and coluumns should have equare numbers anyways. 
         */
         const totalNumber = numInRowToFill.reduce((a, b) => a + b);
+        
         this.numToFillArr = { 
             numInRowToFill,
             numInColumnToFill,
             totalNumber
         }   
-
-        
-       
-        
-
-        
     }
 }
 
 module.exports = Game;
-
-

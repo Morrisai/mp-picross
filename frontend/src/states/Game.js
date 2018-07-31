@@ -26,8 +26,7 @@ class Game extends Phaser.Scene {
     bmd.fillStyle(0xececec, 1);
     bmd.fillRect(0, 0, config.width,config.height);
 
-    this.client = new Client(this);
-   
+    this.client = new Client(this);   
     
     this.title = Banner(this,65, 15,  lang.text('title'), 25);
 
@@ -53,17 +52,14 @@ class Game extends Phaser.Scene {
       client: this.client,
       xPos:0,
       yPos:0   
-    })   
+    });  
     
     this.add.existing(this.grid);
 
     //not sure why this is needed. Possible Bug in phaser
-    this.grid.setPosition(0,0)
-  
-
+    this.grid.setPosition(0,0);
     
-    
-    this.xRemaining = new XState( this, config.width / 2, 20, gameBoard.xState.MAX_X,gameBoard.xState.numOfXs )
+    this.xRemaining = new XState( this, config.width / 2, 20, gameBoard.xState.MAX_X,gameBoard.xState.numOfXs );
     
     this.add.existing(this.xRemaining);
 
@@ -72,8 +68,7 @@ class Game extends Phaser.Scene {
     this.tweens.add({
         targets: [this.grid,this.restart, this.title],
         alpha: { value: '1', duration: 1000, ease: 'Cubic.easeOut' }
-    });
- 
+    }); 
   }
   updateGrid(gameState){
     this.grid.updateGameState(gameState)
@@ -88,31 +83,21 @@ class Game extends Phaser.Scene {
       onComplete: ()=>{this.client.restartGame();
         this.scene.switch('SplashScene')},
     });
-  }
- 
+  } 
   gameOver(){
 
     this.tweens.add({
       targets: [this.grid, this.restart,this.title],
       alpha: { value: '0', duration: 500, ease: 'Cubic.easeOut' },
       onComplete: ()=>{this.scene.switch('GameOverScene')},
-  });
-
-    
+    });   
   }
   gameWon(){
-    
-
       this.tweens.add({
         targets: [this.grid, this.restart,this.title],
         alpha: { value: '0', duration: 500, ease: 'Cubic.easeOut' },
         onComplete: ()=>{this.scene.switch('GameWonScene')},
     });
-  }
-
-  update() {
-    
-    
   }
 }
 

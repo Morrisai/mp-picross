@@ -1,7 +1,11 @@
 
 The MIT License (MIT)
 
+<<<<<<< HEAD:LICENSE.md
 Copyright (c) 2016 Aaron Morris.
+=======
+Copyright (c) 2018 Aaron Morris.
+>>>>>>> e8ffdaca448c91c64d04e8ae5ec342df8e59b78d:frontend/LICENSE.md
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in

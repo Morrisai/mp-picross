@@ -3,6 +3,8 @@ import Banner from '../sprites/Banner';
 import Button from '../sprites/Button';
 import lang from '../lang';
 import Phaser from 'phaser';
+import JoinRoom from '../sprites/JoinRoom';
+
 
 class Splash extends Phaser.Scene {
 	constructor() {
@@ -39,6 +41,11 @@ class Splash extends Phaser.Scene {
 			targets: [start, title],
 			alpha: { value: '1', duration: 1000, ease: 'Cubic.easeOut' }
 		});
+
+		this.add.existing(new JoinRoom(this,  config.width/2-125, config.height/2  ));
+
+		console.log("TODO:: Hook up buttons to join and create!")
+		
 	}
 
 	startGame() {

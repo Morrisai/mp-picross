@@ -5,7 +5,7 @@ export default class extends Phaser.GameObjects.Container {
 	constructor(scene, x, y, bannerText, size = 75) {
 		super(scene, x, y);
 
-		this.button = Banner(scene, 0, 0, bannerText, size);
+		this.button = Banner(scene, 0, 0, bannerText, size, "#803687");
 		this.add(this.button);
 
 		const hitArea = new Phaser.Geom.Rectangle(

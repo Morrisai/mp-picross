@@ -15,14 +15,40 @@
             margin: 0;
             padding: 0;
         }
+
+        #room-input {
+            border: #e800ff solid 2px;
+            border-radius: 10px;
+            position: absolute;
+            width: 76px;
+            font-size: 2em;
+            color: #e800ff;
+            font-family: Bangers, Arial, Helvetica, sans-serif;
+            background: none;
+            text-align: center;
+            visibility: hidden;
+        }
+
+        #room-input:focus {
+            outline: none
+        }
     </style>
 </head>
 
 <body>
 
     <div id="content"></div>
+
+
+    <div id="room-fields">
+        <input id="room-input" value="" maxlength="5">
+    </div>
+
     <!-- uncomment the line bellow for cordova feature -->
     <!-- <script type="text/javascript" src="cordova.js"></script> -->
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
 </body>
 
 </html>

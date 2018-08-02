@@ -1,5 +1,5 @@
 const CreatePuzzleFromImage = require('./CreatePuzzleFromImage');
-const puzzleList = require('./puzzleList').default;
+const puzzleList = require('./puzzleList');
 
 const MAX_X = 6;
 
@@ -16,7 +16,7 @@ class GameManager {
 		this.userMoves = [];
 
 		return CreatePuzzleFromImage(randPuzzle, 10)
-			.then(puzzle => {
+			.then((puzzle) => {
 				if (puzzle.length != puzzle[0].length) {
 					throw new Error('Puzzle must be square!');
 				}
@@ -33,10 +33,10 @@ class GameManager {
 	}
 
 	creatBlankGameState() {
-		this.puzzle.forEach(row => {
+		this.puzzle.forEach((row) => {
 			let newRow = [];
 			row.forEach(() => {
-				newRow.push({ r: 255, g: 255, b: 255, a: 255 });
+				newRow.push({r: 255, g: 255, b: 255, a: 255});
 			});
 			this.gameState.push(newRow);
 		});

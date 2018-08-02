@@ -6,6 +6,7 @@ import config from '../config';
 import Button from '../sprites/Button';
 import lang from '../lang';
 import XState from '../sprites/XState';
+import LinkText from '../sprites/LinkText';
 
 class Game extends Phaser.Scene {
 	constructor() {
@@ -43,6 +44,11 @@ class Game extends Phaser.Scene {
 
 	//called by client
 	createGame(gameBoard) {
+		
+		this.link = LinkText(this, 25, config.height-35,this.client.room);
+		this.add.existing(this.link);
+
+
 		if (this.grid) {
 			this.grid.destroy();
 		}
@@ -70,12 +76,12 @@ class Game extends Phaser.Scene {
 
 		this.add.existing(this.xRemaining);
 
-		this.grid.setAlpha(0);
-		this.restart.setAlpha(0);
-		this.tweens.add({
-			targets: [this.grid, this.restart, this.title],
-			alpha: { value: '1', duration: 1000, ease: 'Cubic.easeOut' }
-		});
+		// this.grid.setAlpha(0);
+		// this.restart.setAlpha(0);
+		// this.tweens.add({
+		// 	targets: [this.grid, this.restart, this.title],
+		// 	alpha: { value: '1', duration: 1000, ease: 'Cubic.easeOut' }
+		// });
 	}
 	updateGrid(gameState) {
 		this.grid.updateGameState(gameState);

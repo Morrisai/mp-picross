@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node --use_strict ./bin/www",
-    "dev": "nodemon --use_strict ./bin/www",
+    "dev": "nodemon --use_strict --inspect ./bin/www",
     "test": "eslint ./**/**.js"
   },
   "dependencies": {
@@ -15,9 +15,12 @@
     "jade": "~1.11.0",
     "jimp": "^0.2.28",
     "morgan": "~1.9.0",
+    "promise": "^8.0.1",
+    "randomstring": "^1.1.5",
+    "shortid": "^2.2.12",
     "socket.io": "^2.1.1"
   },
-  "devDependencies": {    
+  "devDependencies": {
     "eslint": "^4.3.0",
     "eslint-config-airbnb": "^17.0.0",
     "eslint-config-prettier": "^2.9.0",
@@ -28,7 +31,7 @@
     "eslint-plugin-prettier": "^2.6.2",
     "eslint-plugin-promise": "^3.8.0",
     "eslint-plugin-react": "^7.10.0",
-    "eslint-plugin-standard": "^3.1.0",    
+    "eslint-plugin-standard": "^3.1.0",
     "prettier": "^1.14.0",
     "prettier-eslint": "^8.8.2"
   }

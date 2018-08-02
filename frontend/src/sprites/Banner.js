@@ -1,7 +1,7 @@
-export default (scene, x, y, bannerText, size = 40) => {
+export default (scene, x, y, bannerText, size = 40, color= '#E800FF') => {
 	let banner = scene.add.text(x, y, bannerText, {
 		font: size / 20 + 'em Bangers',
-		fill: '#E800FF',
+		fill: color,
 		smoothed: true,
 		padding: 10
 	});

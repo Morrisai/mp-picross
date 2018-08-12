@@ -94,7 +94,8 @@ class GameManager {
 			xState: {
 				MAX_X,
 				numOfXs: game.numOfXs
-			}
+			},
+			roomId
 		};
 	}
 

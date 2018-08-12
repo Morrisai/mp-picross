@@ -61,7 +61,7 @@ class Game extends Phaser.Scene {
 
 	//called by client
 	createGame(gameBoard) {
-		this.link = LinkText(this, 25, config.height - 35, this.room);
+		this.link = LinkText(this, 25, config.height - 35, gameBoard.roomId);
 		this.add.existing(this.link);
 
 		if (this.grid) {

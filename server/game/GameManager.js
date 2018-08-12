@@ -1,19 +1,19 @@
 const CreatePuzzleFromImage = require('./CreatePuzzleFromImage');
 const puzzleList = require('./puzzleList');
+const GameModel = require('./GameModel');
 
 const MAX_X = 6;
 
 class GameManager {
-	constructor() {}
+	constructor() {
+		this.games = {};
+	}
 
-	startNewGame() {
-		this.gameState = [];
-		this.numOfXs = 0;
-		this.isGameOver = false;
-		this.isGameWon = false;
-		var rand = Math.floor(Math.random() * puzzleList.length);
-		var randPuzzle = puzzleList[rand];
-		this.userMoves = [];
+	startNewGame(roomId) {
+		const rand = Math.floor(Math.random() * puzzleList.length);
+		const randPuzzle = puzzleList[rand];
+
+		this.games[roomId] = new GameModel(roomId);
 
 		return CreatePuzzleFromImage(randPuzzle, 10)
 			.then((puzzle) => {
@@ -21,10 +21,10 @@ class GameManager {
 					throw new Error('Puzzle must be square!');
 				}
 
-				this.puzzle = puzzle;
+				this.games[roomId].puzzle = puzzle;
 
-				this.creatBlankGameState();
-				this.createHintData();
+				this.createBlankGameState(roomId);
+				this.createHintData(roomId);
 			})
 			.catch(function(err) {
 				// handle an exception
@@ -32,93 +32,86 @@ class GameManager {
 			});
 	}
 
-	creatBlankGameState() {
-		this.puzzle.forEach((row) => {
+	createBlankGameState(roomId) {
+		this.games[roomId].puzzle.forEach((row) => {
 			let newRow = [];
 			row.forEach(() => {
 				newRow.push({r: 255, g: 255, b: 255, a: 255});
 			});
-			this.gameState.push(newRow);
+			this.games[roomId].gameState.push(newRow);
 		});
 	}
 
-	checkUserMove(data) {
-		var userMoveString = data.row.toString() + data.column.toString();
-
+	checkUserMove(data, roomId) {
+		const userMoveString = data.row.toString() + data.column.toString();
+		const game = this.games[roomId];
 		//check if boxed checked yet. help to prevent race condition of two players checking the same box at the same time.
-		if (!this.userMoves.includes(userMoveString)) {
-			if (this.puzzle[data.row][data.column] === 'x') {
-				this.numOfXs++;
+		if (!game.userMoves.includes(userMoveString)) {
+			if (game.puzzle[data.row][data.column] === 'x') {
+				game.numOfXs++;
 			} else {
-				this.numToFillArr.totalNumber--;
+				game.numToFillArr.totalNumber--;
 
-				this.numToFillArr.numInRowToFill[data.row]--;
-				this.numToFillArr.numInColumnToFill[data.column]--;
+				game.numToFillArr.numInRowToFill[data.row]--;
+				game.numToFillArr.numInColumnToFill[data.column]--;
 			}
 
-			if (this.numOfXs === MAX_X) {
-				this.isGameOver = true;
+			if (game.numOfXs === MAX_X) {
+				game.isGameOver = true;
 			}
 
-			if (this.numToFillArr.totalNumber === 0) {
-				this.isGameWon = true;
+			if (game.numToFillArr.totalNumber === 0) {
+				game.isGameWon = true;
 			}
-			this.gameState[data.row][data.column] = this.puzzle[data.row][
-				data.column
-			];
+			game.gameState[data.row][data.column] =
+				game.puzzle[data.row][data.column];
 		} else {
 			console.log('user moved checked already'); // eslint-disable-line
 		}
 		//record user Move
-		this.userMoves.push(userMoveString);
+		game.userMoves.push(userMoveString);
 
 		return {
 			row: data.row,
 			column: data.column,
-			value: this.gameState[data.row][data.column],
-			numLeftInRow: this.numToFillArr.numInRowToFill[data.row],
-			numLeftInColumn: this.numToFillArr.numInColumnToFill[data.column],
-			numOfXs: this.numOfXs,
+			value: game.gameState[data.row][data.column],
+			numLeftInRow: game.numToFillArr.numInRowToFill[data.row],
+			numLeftInColumn: game.numToFillArr.numInColumnToFill[data.column],
+			numOfXs: game.numOfXs,
 			maxXs: MAX_X,
-			isGameOver: this.isGameOver,
-			isGameWon: this.isGameWon
+			isGameOver: game.isGameOver,
+			isGameWon: game.isGameWon
 		};
 	}
 
-	getGameState() {
-		return this.gameState;
-	}
-	getHintData() {
-		return this.hintData;
-	}
-	getLeftToFill() {
-		return this.numToFillArr;
-	}
-	getCurrentStateWithHints() {
+	getCurrentStateWithHints(roomId) {
+		const game = this.games[roomId];
+		//	console.log(game)
 		return {
-			gameState: this.getGameState(),
-			hints: this.getHintData(),
-			leftToFill: this.getLeftToFill(),
+			gameState: game.getGameState(),
+			hints: game.getHintData(),
+			leftToFill: game.getLeftToFill(),
 			xState: {
 				MAX_X,
-				numOfXs: this.numOfXs
+				numOfXs: game.numOfXs
 			}
 		};
 	}
 
-	createHintData() {
-		const boardSize = this.puzzle[0].length;
+	createHintData(roomId) {
+		const game = this.games[roomId];
+		const boardSize = game.puzzle[0].length;
 
 		//do columns first
 		const hintColumns = [];
 		const numInColumnToFill = [];
-		this.puzzle[0].forEach((column, columnIndex) => {
+		game.puzzle[0].forEach((column, columnIndex) => {
 			let streak = 0;
 			let numPerColumn = 0;
 
 			hintColumns[columnIndex] = [];
 
-			this.puzzle.forEach((row, rowIndex) => {
+			game.puzzle.forEach((row, rowIndex) => {
 				if (row[columnIndex] != 'x') {
 					streak++;
 					numPerColumn++;
@@ -144,7 +137,7 @@ class GameManager {
 		//Rows
 		const hintRows = [];
 		const numInRowToFill = [];
-		this.puzzle.forEach((row, rowIndex) => {
+		game.puzzle.forEach((row, rowIndex) => {
 			let streak = 0;
 			let numPerRow = 0;
 
@@ -169,7 +162,7 @@ class GameManager {
 			numPerRow = 0;
 		});
 
-		this.hintData = {
+		game.hintData = {
 			hintRows,
 			hintColumns
 		};
@@ -179,7 +172,7 @@ class GameManager {
         */
 		const totalNumber = numInRowToFill.reduce((a, b) => a + b);
 
-		this.numToFillArr = {
+		game.numToFillArr = {
 			numInRowToFill,
 			numInColumnToFill,
 			totalNumber

@@ -1,7 +1,6 @@
 import Phaser from 'phaser';
 import Banner from '../sprites/Banner';
 import Grid from '../sprites/Grid';
-import Client from '../Sockets/Client';
 import config from '../config';
 import Button from '../sprites/Button';
 import lang from '../lang';
@@ -15,7 +14,27 @@ class Game extends Phaser.Scene {
 		});
 	}
 
-	init() {}
+	init(data) {
+		this.client = data.client;
+		this.client.game = this;
+
+		if (data.roomId) {
+			this.room = data.roomId;
+			this.client.getInitialGameState(data.roomId);
+		} else {
+			this.client.createRoom();
+		}
+
+		if (history.pushState) {
+			var newurl =
+				window.location.protocol +
+				'//' +
+				window.location.host +
+				window.location.pathname +
+				'';
+			window.history.pushState({ path: newurl }, '', newurl);
+		}
+	}
 	preload() {}
 
 	create() {
@@ -23,9 +42,7 @@ class Game extends Phaser.Scene {
 		bmd.fillStyle(0xececec, 1);
 		bmd.fillRect(0, 0, config.width, config.height);
 
-		this.client = new Client(this);
-
-		this.title = Banner(this, 65, 15, lang.text('title'), 25);
+		this.title = Banner(this, 65, 15, lang.text('title'), 25, config.titleFont);
 
 		this.restart = new Button(
 			this,
@@ -44,10 +61,8 @@ class Game extends Phaser.Scene {
 
 	//called by client
 	createGame(gameBoard) {
-		
-		this.link = LinkText(this, 25, config.height-35,this.client.room);
+		this.link = LinkText(this, 25, config.height - 35, this.room);
 		this.add.existing(this.link);
-
 
 		if (this.grid) {
 			this.grid.destroy();

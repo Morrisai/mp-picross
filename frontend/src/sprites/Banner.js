@@ -1,6 +1,8 @@
-export default (scene, x, y, bannerText, size = 40, color= '#E800FF') => {
+import config from "../config";
+
+export default (scene, x, y, bannerText, size = 40, color = config.primaryColor, font = "Lobster") => {
 	let banner = scene.add.text(x, y, bannerText, {
-		font: size / 20 + 'em Bangers',
+		font: `${size / 20}em ${font}`,
 		fill: color,
 		smoothed: true,
 		padding: 10

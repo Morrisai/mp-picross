@@ -7,7 +7,9 @@ import Phaser from 'phaser';
 
 export default {
 	localStorageName: 'mp-picross',
-	webfonts: ['Bangers'],
+	webfonts: ['Lobster', 'Cabin','Nunito'],
+	titleFont: 'Lobster',
+	mainFont: 'Cabin',
 	type: Phaser.AUTO,
 	pixelArt: true,
 	roundPixels: true,
@@ -16,6 +18,7 @@ export default {
 	height: 800,
 	padding: 300,
 	backgroundColor: 0xececec,
+	primaryColor: '#ff5722',
 	hintColor: '#333333',
 	hintFinishedColor: '#f2ba00',
 	scene: [BootState, SplashState, GameState, GameOver, GameWon]

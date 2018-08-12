@@ -1,27 +1,19 @@
 import io from 'socket.io-client';
 
 export default class Client {
-	constructor(gameState) {
-		this.game = gameState;
-		
+	constructor() {
 		const serverUrl = __DEV__ ? 'http://localhost:3000' : ''; // eslint-disable-line
 
 		this.socket = io(serverUrl);
-		this.socket.on('connect', () =>{
-			
+		this.socket.on('connect', () => {});
+
+		this.socket.on('disconnect', () => {});
+
+	
+
+		this.socket.on('joinedRoom', roomId => {
+			this.room = roomId;
 		});
-
-		
-		this.socket.on('disconnect', ()=> {});
-
-		this.socket.on('game', data => {
-			this.gotGameState(data);
-		});
-
-		this.socket.on('joinedRoom', (roomId)=>{
-			this.room=roomId;
-			console.log("joined Room:", this.room)
-		})
 
 		this.socket.on('gameOver', () => {
 			this.gotGameOver();
@@ -46,8 +38,13 @@ export default class Client {
 	restartGame() {
 		this.socket.emit('startGame');
 	}
-	createRoom(){
-		this.socket.emit('createRoom');
+	createRoom() {
+		this.socket.emit('createRoom', '', data => {
+			this.gotInitialGameState(data);
+		});
+	}
+	joinRoom(roomId, fn) {
+		this.socket.emit('joinRoom', roomId, fn);
 	}
 
 	dispatchMove({ rowIndex, columnIndex }) {
@@ -61,10 +58,12 @@ export default class Client {
 		this.game.updateGrid(userMove);
 	}
 
+	getInitialGameState(roomId) {
+		this.socket.emit('getInitialState', roomId);
+	}
+
 	gotInitialGameState(data) {
 		this.initGameState = data;
-
-		console.log(this.room)
 		this.game.createGame(this.initGameState);
 	}
 

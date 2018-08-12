@@ -82,7 +82,7 @@ export default class extends Phaser.GameObjects.Container {
 				fontSize: this.squareSize,
 				color: color,
 				smoothed: false,
-				fontFamily: 'Arial',
+				fontFamily: config.mainFont,
 				backgroundColor: 0x000000
 			}
 		);
@@ -104,7 +104,7 @@ export default class extends Phaser.GameObjects.Container {
 				fontSize: this.squareSize * 0.75,
 				color: color,
 				smoothed: false,
-				fontFamily: 'Arial',
+				fontFamily: config.mainFont,
 				backgroundColor: 0x000000,
 				align: 'center'
 			}

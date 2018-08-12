@@ -1,58 +1,63 @@
 const randomString = require('randomstring');
+const GameManager = require('../game/GameManager');
 
 const Promise = require('promise');
 
 class Server {
 	constructor(io) {
-		const Game = require('../game/GameManager');
-		const game = new Game();
+		this.gameManager = new GameManager();
 
 		this.rooms = {};
 		this.io = io;
 
 		this.io.on('connection', (socket) => {
+			socket.on('joinRoom', (room, fn) => {
+				room = room.trim().toUpperCase();
 
-			
-			socket.on('joinRoom', (room) => {
-				socket.join(room);
-				socket.roomId = room;
-				this.rooms[room].sockets.push(socket);
+				//check if Room exists first
+				if (this.rooms[room]) {
+					socket.join(room);
+					socket.roomId = room;
+					this.rooms[room].sockets.push(socket);
+					if (fn) fn({room});
+				} else {
+					if (fn) fn({error: 'noroom', room});
+				}
 			});
 
-			socket.on('createRoom', () => {
-				this.createRoom(socket).then(() => {
-					this.startGame(game, socket.roomId);
-				});
+			socket.on('createRoom', (data, fn) => {
+				this.createRoom(socket)
+					.then(() => {
+						return this.gameManager.startNewGame(socket.roomId);
+					})
+					.then(() => {
+						fn(this.gameManager.getCurrentStateWithHints(socket.roomId));
+					});
 			});
-
-			// if (
-			// 	game &&
-			// 	!game.isGameOver &&
-			// 	!game.isGameWon
-			// ) {
-			// 	//console.log(game.isGameOver, "emitInitialState")
-			// 	this.emitInitialState(game, socket.roomId);
-			// } else {
-			// 	this.startGame(game, socket.roomId);
-			// }
 
 			socket.on('startGame', () => {
-				console.log('startGame', socket.roomId);
 				if (!socket.roomId) {
 					this.createRoom(socket);
 				}
 
-				this.startGame(game, socket.roomId);
+				this.startGame(socket.roomId);
+			});
+
+			socket.on('getInitialState', (roomId) => {
+				this.emitInitialState(roomId);
 			});
 
 			socket.on('userMove', (data) => {
-				if (game.isGameOver) {
+				if (this.gameManager.isGameOver) {
 					this.emitGameOver();
 					return;
 				}
 
 				if (!isNaN(data.row) && !isNaN(data.column)) {
-					let currentGameState = game.checkUserMove(data);
+					let currentGameState = this.gameManager.checkUserMove(
+						data,
+						socket.roomId
+					);
 
 					if (currentGameState.isGameOver) {
 						this.emitGameOver(currentGameState, socket.roomId);
@@ -83,19 +88,24 @@ class Server {
 			socket.emit('joinedRoom', newRoom);
 			socket.roomId = newRoom;
 
-			console.log('room created:', socket.roomId);
+			console.log('room created:', socket.roomId); // eslint-disable-line
 
 			resolve();
 		});
 	}
-	startGame(game, roomId) {
-		game.startNewGame().then(() => {
-			this.emitInitialState(game, roomId);
+	startGame(roomId) {
+		this.gameManager.startNewGame(roomId).then(() => {
+			this.emitInitialState(roomId);
 		});
 	}
 
-	emitInitialState(game, roomId) {
-		this.io.to(roomId).emit('initalState', game.getCurrentStateWithHints());
+	emitInitialState(roomId) {
+		this.io
+			.to(roomId)
+			.emit(
+				'initalState',
+				this.gameManager.getCurrentStateWithHints(roomId)
+			);
 	}
 
 	emitGameOver(currentGameState, roomId) {
